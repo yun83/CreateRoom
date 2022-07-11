@@ -38,7 +38,7 @@ namespace JyModule
         public void OnChangede_RoomType()
         {
             int idx = RoomSeleftDromdown.value;
-            Debug.Log(idx);
+            Debug.Log((MapType)idx);
             if (idx == 0)
             {
                 ItemBoxGroup[0].SetActive(true);

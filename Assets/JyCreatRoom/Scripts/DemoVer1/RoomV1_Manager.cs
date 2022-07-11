@@ -30,7 +30,7 @@ namespace JyModule
         private bool LoadingCheck = true;
         //에디터에서 실시간 변경을 확인하기 위한 체크용 변수
         private Color subColor;
-        private Vector3Int subSize;
+        private Vector3Int subSize = Vector3Int.one;
         /// <summary>
         /// true 일때 오브젝트 들고 있을경우
         /// </summary>
@@ -63,6 +63,13 @@ namespace JyModule
 #else
             SavePath = Path.Combine(Application.persistentDataPath , "database.json");
 #endif
+            saveData.Bottom_Item.Clear();
+            saveData.LeftObverse.Clear();
+            saveData.RightObverse.Clear();
+            saveData.LeftBack.Clear();
+            saveData.RightBack.Clear();
+            LoadingCheck = true;
+
             InitPage();
             LoadRoomData();
         }
@@ -88,9 +95,8 @@ namespace JyModule
                 NotPutColor = saveData.NotColor;
             }
 
-            LoadingCheck = false;
-
-            StartCoroutine(ListReSizeing());
+            if(LoadingCheck)
+                StartCoroutine(ListReSizeing());
         }
 
         void SaveDataIndexSetting(List<ItemLsit> _list)
@@ -136,9 +142,8 @@ namespace JyModule
             //추후 버튼 클릭 등의 타 이벤트 발생시로 변경
             if (subSize != RoomSize)
             {
-                LoadingCheck = false;
-                subSize = RoomSize;
-                StartCoroutine(ListReSizeing());
+                if(LoadingCheck)
+                    StartCoroutine(ListReSizeing());
             }
 
             //에디터 상에서 바닥 타일의 색상을 바로 확인 위해서 업데이트 상에서 체크.
@@ -178,6 +183,7 @@ namespace JyModule
         IEnumerator ListReSizeing()
         {
             var _yield = new WaitForEndOfFrame();
+            LoadingCheck = false;
 
             if (ItemGroup != null)
                 Destroy(ItemGroup.gameObject);
@@ -277,6 +283,7 @@ namespace JyModule
             yield return _yield;
 
             PlacementPosSetting();
+            subSize = RoomSize;
 
             yield return _yield;
 
@@ -652,7 +659,6 @@ namespace JyModule
             saveData.CanColor = CanPutColor;
             saveData.NotColor = NotPutColor;
 
-            saveData.Bottom_Item.Clear();
             for (int i = 0; i < CreateItemList.Count; i++)
             {
                 ItemLsit temp = new ItemLsit();
@@ -704,8 +710,6 @@ namespace JyModule
                         {
                             for (int j = 0; j < InsPlacement.ObjSize.z; j++)
                             {
-                                //Debug.Log("i[" + i + "] j[" + j + "] ==>" + (posIndex.x + i) + ":" +(posIndex.z + j));
-
                                 int nowMapLayer = MapCheckList[posIndex.x + i][posIndex.z + j];
                                 //if (nowMapLayer != 0 &&
                                 if(oldLayer != nowMapLayer)
