@@ -5,7 +5,7 @@ This module is created for placing items in the room.
 * location of the demo scene
 	* JyCreatRoom/Scenes/DemoVer1
 
-'''c#
+```c
 #if UNITY_EDITOR
 	SavePath = Path.Combine(Application.dataPath, "database.json");
 #else
@@ -13,6 +13,6 @@ This module is created for placing items in the room.
 #endif
 	string json = JsonUtility.ToJson(saveData, true);
 	File.WriteAllText(SavePath, json);
-'''
+```
 
-ÇöÀç Json ÆÄÀÏ·Î ÀúÀå ÇÏ°í ÀÖ´Âµ¥ ÃßÈÄ ¼­¹ö¿¡ ÀúÀåÇÏ´Â ÇüÅÂ·Î º¯È¯ ÇØ¾ß ÇÑ´Ù.
+í˜„ì¬ Json íŒŒì¼ë¡œ ì €ì¥ í•˜ê³  ìˆëŠ”ë° ì¶”í›„ ì„œë²„ì— ì €ì¥í•˜ëŠ” í˜•íƒœë¡œ ë³€í™˜ í•´ì•¼ í•œë‹¤.
