@@ -16,7 +16,6 @@ namespace JyModule
         private bool ShowObjectData = true;
         public ObjectData od;
 
-
         private bool EnumeratorCheck = false;
         private Color checkColor;
 

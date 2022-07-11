@@ -473,6 +473,9 @@ namespace JyModule
             if (InsPlacement == null)
                 return;
 
+            GameObject temp = null;
+            Color subColor = Color.white;
+
             InsPlacement.putOk = InsPutCheck(mData.MyPos, InsPlacement.ItemLayerId);
             
             if (InsPlacement.putOk)
@@ -492,6 +495,9 @@ namespace JyModule
                 if (saveCheck)
                 {
                     CreateItemList.Add(InsPlacement);
+
+                    temp = InsPlacement.gameObject;
+                    subColor = InsPlacement.ObjectColor;
                 }
 
                 HandUpObj = false;
@@ -500,7 +506,12 @@ namespace JyModule
 
                 PlacementPosSetting();
                 ArrangementMode(0);
+
+                if (temp != null) 
+                    CopyObjectSetting(temp, subColor);
             }
+
+            //OnClick_CreatePla(InsPlacement.gameObject);
         }
 
         //배치된 오브젝트 클릭시 발생.
@@ -836,6 +847,25 @@ namespace JyModule
                     }
                     break;
             }
+        }
+
+        void CopyObjectSetting(GameObject _temp,Color _color) {
+            //Debug.Log(_temp);
+            //배치 아이템 생성
+            cpCount++;
+            GameObject item = Instantiate(_temp);
+            item.name = "CopyObject Number : " + cpCount;
+
+            item.transform.parent = ItemGroup;
+            InsPlacement = item.GetComponent<PlacementManger>();
+            InsPlacement.ChangeColor(_color);
+            InsPlacement.roomManager = this;
+            InsPlacement.PlacementID = cpCount;
+            InsPlacement.AddOutLine();
+            HandUpObj = true;
+
+            PlacementPosSetting();
+            ArrangementMode(1);
         }
     }
 
