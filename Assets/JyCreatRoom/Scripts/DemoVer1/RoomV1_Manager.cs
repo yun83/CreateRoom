@@ -35,6 +35,7 @@ namespace JyModule
         /// true 일때 오브젝트 들고 있을경우
         /// </summary>
         public bool HandUpObj = false;
+        private bool ObjectDelete = false;
 
         //맵 체크하기 위한 배열
         public List<int[]> MapCheckList = new List<int[]>();
@@ -69,6 +70,7 @@ namespace JyModule
             saveData.LeftBack.Clear();
             saveData.RightBack.Clear();
             LoadingCheck = true;
+            ObjectDelete = false;
 
             InitPage();
             LoadRoomData();
@@ -395,6 +397,8 @@ namespace JyModule
 
         public void OnClick_CreatePla(GameObject _obj)
         {
+            ObjectDelete = false;
+
             if (!LoadingCheck)
                 return;
             if (InsPlacement != null)
@@ -523,7 +527,6 @@ namespace JyModule
                 return;
 
             int idx = -1;
-            int endIndex = -1;
             PlacementManger tempPM = null;
             for (int i = 0; i < CreateItemList.Count; i++)
             {
@@ -559,21 +562,28 @@ namespace JyModule
                     break;
             }
 
-            if (endIndex >= 0)
-                InsPlacement = CreateItemList[endIndex];
-            else
-                InsPlacement = CreateItemList[idx];
+            if (ObjectDelete)
+            {
+                Destroy(CreateItemList[idx].gameObject);
+                CreateItemList.RemoveAt(idx);
+                PlacementPosSetting();
+                ArrangementMode(0);
+                return;
+            }
+
+            InsPlacement = CreateItemList[idx];
 
             InsPlacement.roomManager = this;
             InsPlacement.AddOutLine();
             HandUpObj = true;
 
             CreateItemList.RemoveAt(idx);
+
             PlacementPosSetting();
             ArrangementMode(1);
         }
 
-        public void OnClick_DeletObject()
+        public void OnClick_HandOutObject()
         {
             if (!LoadingCheck)
                 return;
@@ -653,14 +663,24 @@ namespace JyModule
                 CreateItemList.RemoveAt(i);
             }
 
-            if (File.Exists(SavePath))
+            //if (File.Exists(SavePath))
+            //{
+            //    File.Delete(SavePath);
+            //}
+            //else
+            //{
+            //    Debug.Log("이미 삭제된 파일입니다.");
+            //}
+        }
+
+        public void OnClick_OneObjectDelete()
+        {
+            if (HandUpObj)
             {
-                File.Delete(SavePath);
+                OnClick_HandOutObject();
             }
-            else
-            {
-                Debug.Log("이미 삭제된 파일입니다.");
-            }
+
+            ObjectDelete = true;
         }
 
         public void Onclick_SaveRoom()
@@ -669,6 +689,14 @@ namespace JyModule
             saveData.BaseColor = BaseTileColor;
             saveData.CanColor = CanPutColor;
             saveData.NotColor = NotPutColor;
+            switch (useType)
+            {
+                case MapType.Bottom: saveData.Bottom_Item.Clear(); break;
+                case MapType.Obverse_Left_Wall: saveData.LeftObverse.Clear(); break;
+                case MapType.Obverse_Right_Wall: saveData.RightObverse.Clear(); break;
+                case MapType.Back_Left_Wall: saveData.LeftBack.Clear(); break;
+                case MapType.Back_Right_Wall: saveData.RightBack.Clear(); break;
+            }
 
             for (int i = 0; i < CreateItemList.Count; i++)
             {

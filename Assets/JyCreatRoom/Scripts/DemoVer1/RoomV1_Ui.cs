@@ -72,6 +72,10 @@ namespace JyModule
         {
             roomManager.Onclick_DeleteSave();
         }
+        public void OnClick_DeletObject()
+        {
+            roomManager.OnClick_OneObjectDelete();
+        }
 
         void ObjectData_Setting()
         {
