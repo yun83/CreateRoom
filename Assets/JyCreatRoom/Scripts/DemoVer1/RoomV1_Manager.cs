@@ -47,6 +47,11 @@ namespace JyModule
         public List<PlacementManger> CreateItemList = new List<PlacementManger>();
         private int cpCount = 0;
 
+        //카메라 회전 관련
+        public Transform LookTargetObj;
+        private float xRotateMove, yRotateMove;
+        public float rotateSpeed = 100;
+        public float scrollSpeed = 1000;
         //현재 선택된 오브젝트의 데이터를 확인하기위해
         public PlacementManger InsPlacement = null;
 
@@ -152,6 +157,30 @@ namespace JyModule
             //추후 빌드나 테스트 완료시 제거
             if (subColor != BaseTileColor)
                 OnChangdeColor();
+
+            CameraMouseMove();
+        }
+
+        void CameraMouseMove()
+        {
+            if (Input.GetMouseButton(1))
+            {
+                xRotateMove = Input.GetAxis("Mouse X") * Time.deltaTime * rotateSpeed;
+                yRotateMove = Input.GetAxis("Mouse Y") * Time.deltaTime * rotateSpeed;
+
+                MainCamera.RotateAround(LookTargetObj.position, Vector3.right, -yRotateMove);
+                MainCamera.RotateAround(LookTargetObj.position, Vector3.up, xRotateMove);
+
+                MainCamera.LookAt(LookTargetObj);
+            }
+            else
+            {
+                float scroollWheel = Input.GetAxis("Mouse ScrollWheel");
+
+                Vector3 cameraDirection = MainCamera.localRotation * Vector3.forward;
+
+                MainCamera.position += cameraDirection * Time.deltaTime * scroollWheel * scrollSpeed;
+            }
         }
 
         void ArrangementMode(int OnMode)
@@ -331,10 +360,13 @@ namespace JyModule
             CenterPos.x = RoomSize.x / 2;
             CenterPos.y = RoomSize.z;
             CenterPos.z = RoomSize.z / 2;
+
+            LookTargetObj.position = new Vector3(CenterPos.x, 0, CenterPos.z);
             //카메라 바라보는 각도 조절
             MainCamera.position = CenterPos;
-            v3Rotation.eulerAngles = new Vector3(90, 0, 0);
-            MainCamera.rotation = v3Rotation;
+            //v3Rotation.eulerAngles = new Vector3(90, 0, 0);
+            //MainCamera.rotation = v3Rotation;
+            MainCamera.LookAt(LookTargetObj);
         }
 
         void Map_ObverseLWall()
@@ -379,9 +411,11 @@ namespace JyModule
             else
                 CenterPos.z = -RoomSize.x;
 
+            LookTargetObj.position = new Vector3(CenterPos.x, CenterPos.y, 0);
             MainCamera.position = CenterPos;
-            v3Rotation.eulerAngles = new Vector3(0, 0, 0);
-            MainCamera.rotation = v3Rotation;
+            //v3Rotation.eulerAngles = new Vector3(0, 0, 0);
+            //MainCamera.rotation = v3Rotation;
+            MainCamera.LookAt(LookTargetObj);
         }
 
         void OnChangdeColor()
