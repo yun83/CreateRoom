@@ -629,6 +629,8 @@ MonoBehaviour:
   HandUpObj: 0
   CreateItemList: []
   LookTargetObj: {fileID: 1949135837}
+  rotateSpeed: 300
+  scrollSpeed: 1000
   InsPlacement: {fileID: 0}
 --- !u!4 &164716423
 Transform:

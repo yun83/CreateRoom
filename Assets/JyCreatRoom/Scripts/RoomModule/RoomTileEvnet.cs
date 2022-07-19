@@ -28,30 +28,17 @@ namespace JyModule
 
             roomManager.OnMouse_EnterEvent_Bottom(this);
         }
+
         private void OnMouseExit()
         {
             CheckMouseUp = false;
             //Debug.Log("마우스가 오브젝트를 벗어남.");
         }
+
         private void OnMouseUp()
         {
             //print("마우스가 오브젝트를 놓았습니다.");
             roomManager.OnMouse_UpEvent_Bottom(this);
         }
-
-        //private void OnMouseDown()
-        //{
-        //    print("마우스가 오브젝트를 잡았습니다.");
-        //    roomManager.OnMouse_DownEvent_Bottom(this);
-        //}
-        //private void OnMouseOver()
-        //{
-        //    CheckMouseUp = true;
-        //    //Debug.Log("마우스가 오브젝트를 위에 존재.");
-        //}
-        //private void OnMouseDrag()
-        //{
-        //    print("마우스가 오브젝트를 잡고있다");
-        //}
     }
 }

@@ -324,7 +324,7 @@ namespace JyModule
         void Map_BottomSetting()
         {
             Vector3 CenterPos = Vector3.zero;
-            Quaternion v3Rotation = new Quaternion();
+            //Quaternion v3Rotation = new Quaternion();
             BaseTile.transform.localScale = new Vector3(1, 0.1f, 1);
 
             for (int sx = 0; sx < MapCheckList.Count; sx++)
@@ -372,7 +372,7 @@ namespace JyModule
         void Map_ObverseLWall()
         {
             Vector3 CenterPos = Vector3.zero;
-            Quaternion v3Rotation = new Quaternion();
+            //Quaternion v3Rotation = new Quaternion();
             BaseTile.transform.localScale = new Vector3(1, 1f, 0.1f);
 
             for (int sx = 0; sx < MapCheckList.Count; sx++)
@@ -454,6 +454,7 @@ namespace JyModule
             //InsPlacement.Mat = Instantiate(item.GetComponent<MeshRenderer>().sharedMaterial);
             //InsPlacement.GetComponent<MeshRenderer>().sharedMaterial = InsPlacement.Mat;
 
+            PlacementPosSetting();
             ArrangementMode(1);
         }
 
@@ -464,30 +465,6 @@ namespace JyModule
                 return;
             if (InsPlacement == null)
                 return;
-
-            switch (useType)
-            {
-                case MapType.Bottom:
-                    if (MapCheckList[mData.MyPos.x][mData.MyPos.z] == 0)
-                    {
-                        InsPlacement.putOk = true;
-                    }
-                    break;
-                case MapType.Obverse_Left_Wall:
-                case MapType.Back_Left_Wall:
-                    if (MapCheckList[mData.MyPos.x][mData.MyPos.y] == 0)
-                    {
-                        InsPlacement.putOk = true;
-                    }
-                    break;
-                case MapType.Obverse_Right_Wall:
-                case MapType.Back_Right_Wall:
-                    if (MapCheckList[mData.MyPos.z][mData.MyPos.y] == 0)
-                    {
-                        InsPlacement.putOk = true;
-                    }
-                    break;
-            }
 
             InsPlacement.putOk = InsPutCheck(mData.MyPos, InsPlacement.ItemLayerId);
             Vector3 _Pos = mData.MyPos;
@@ -824,18 +801,18 @@ namespace JyModule
                 case MapType.Obverse_Right_Wall:
                 case MapType.Back_Right_Wall:
                     {
-                        if (RoomSize.z <= (posIndex.z + (InsPlacement.ObjSize.z - 1)))
+                        if (RoomSize.z <= (posIndex.x + (InsPlacement.ObjSize.x - 1)))
                             return false;
                         if (RoomSize.y <= (posIndex.y + (InsPlacement.ObjSize.y - 1)))
                             return false;
 
-                        for (int i = 0; i < InsPlacement.ObjSize.z; i++)
+                        for (int i = 0; i < InsPlacement.ObjSize.x; i++)
                         {
                             for (int j = 0; j < InsPlacement.ObjSize.y; j++)
                             {
                                 //Debug.Log("i[" + i + "] j[" + j + "] ==>" + (posIndex.x + i) + ":" +(posIndex.z + j));
 
-                                int nowMapLayer = MapCheckList[posIndex.z + i][posIndex.y + j];
+                                int nowMapLayer = MapCheckList[posIndex.x + i][posIndex.y + j];
                                 //if (nowMapLayer != 0 &&
                                 if (oldLayer != nowMapLayer)
                                 {
@@ -898,7 +875,7 @@ namespace JyModule
                 case MapType.Back_Right_Wall:
                     for (int i = 0; i < CreateItemList.Count; i++)
                     {
-                        for (int _z = 0; _z < CreateItemList[i].ObjSize.z; _z++)
+                        for (int _z = 0; _z < CreateItemList[i].ObjSize.x; _z++)
                         {
                             for (int _y = 0; _y < CreateItemList[i].ObjSize.y; _y++)
                             {

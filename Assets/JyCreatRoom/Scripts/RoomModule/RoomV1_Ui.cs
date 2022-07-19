@@ -50,6 +50,7 @@ namespace JyModule
             }
             roomManager.Onclick_MapTypeSelect(idx);
         }
+
         public void OnClick_RoomType(int index)
         {
             if(index == 0)
