@@ -825,7 +825,6 @@ namespace JyModule
                     }
                     break;
             }
-
             return true;
         }
 
@@ -859,6 +858,8 @@ namespace JyModule
                     break;
                 case MapType.Obverse_Left_Wall:
                 case MapType.Back_Left_Wall:
+                case MapType.Obverse_Right_Wall:
+                case MapType.Back_Right_Wall:
                     for (int i = 0; i < CreateItemList.Count; i++)
                     {
                         for (int _x = 0; _x < CreateItemList[i].ObjSize.x; _x++)
@@ -871,20 +872,20 @@ namespace JyModule
                         }
                     }
                     break;
-                case MapType.Obverse_Right_Wall:
-                case MapType.Back_Right_Wall:
-                    for (int i = 0; i < CreateItemList.Count; i++)
-                    {
-                        for (int _z = 0; _z < CreateItemList[i].ObjSize.x; _z++)
-                        {
-                            for (int _y = 0; _y < CreateItemList[i].ObjSize.y; _y++)
-                            {
-                                if (MapCheckList[CreateItemList[i].inPutPos.z + _z][CreateItemList[i].inPutPos.y + _y] <= CreateItemList[i].ItemLayerId)
-                                    MapCheckList[CreateItemList[i].inPutPos.z + _z][CreateItemList[i].inPutPos.y + _y] = CreateItemList[i].ItemLayerId;
-                            }
-                        }
-                    }
-                    break;
+                //case MapType.Obverse_Right_Wall:
+                //case MapType.Back_Right_Wall:
+                //    for (int i = 0; i < CreateItemList.Count; i++)
+                //    {
+                //        for (int _z = 0; _z < CreateItemList[i].ObjSize.x; _z++)
+                //        {
+                //            for (int _y = 0; _y < CreateItemList[i].ObjSize.y; _y++)
+                //            {
+                //                if (MapCheckList[CreateItemList[i].inPutPos.z + _z][CreateItemList[i].inPutPos.y + _y] <= CreateItemList[i].ItemLayerId)
+                //                    MapCheckList[CreateItemList[i].inPutPos.z + _z][CreateItemList[i].inPutPos.y + _y] = CreateItemList[i].ItemLayerId;
+                //            }
+                //        }
+                //    }
+                //    break;
             }
         }
 

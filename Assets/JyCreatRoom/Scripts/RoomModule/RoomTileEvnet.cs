@@ -25,7 +25,6 @@ namespace JyModule
             //Debug.Log("마우스가 오브젝트에 진입.");
             if (roomManager == null)
                 return;
-
             roomManager.OnMouse_EnterEvent_Bottom(this);
         }
 
