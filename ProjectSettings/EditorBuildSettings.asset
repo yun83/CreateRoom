@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/JyCreatRoom/Scenes/DemoVer1.unity
     guid: cbe7d12e9a527cf42b33d5ff5c0cc8e0
+  - enabled: 1
+    path: Assets/JyCreatRoom/Scenes/freeView.unity
+    guid: cda978a82851be2469e7cc64a8bb0208
   m_configObjects: {}

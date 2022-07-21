@@ -119,6 +119,8 @@ namespace JyModule
 
         private void OnMouseDown()
         {
+            if (roomManager == null)
+                return;
             roomManager.OnMouse_DownEvent_Bottom(PlacementID);
         }
 

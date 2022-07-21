@@ -14,7 +14,7 @@ namespace JyModule
 
         public GameObject ObjectData;
         private bool ShowObjectData = true;
-        public ObjectData od;
+        public ObjectData ObjData;
 
         private bool EnumeratorCheck = false;
         private Color checkColor;
@@ -77,7 +77,10 @@ namespace JyModule
         {
             roomManager.OnClick_OneObjectDelete();
         }
-
+        public void OnClick_FreeView()
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene("freeView");
+        }
         void ObjectData_Setting()
         {
             ShowObjectData = roomManager.HandUpObj;
@@ -88,8 +91,8 @@ namespace JyModule
                 if (roomManager.InsPlacement == null)
                     return;
 
-                od.ObjName.text = roomManager.InsPlacement.name;
-                od.Description.text = "Layer Number : " + roomManager.InsPlacement.ItemLayerId.ToString() + "\n" + "Item ID : " + roomManager.InsPlacement.ItemId.ToString();
+                ObjData.ObjName.text = roomManager.InsPlacement.name;
+                ObjData.Description.text = "Layer Number : " + roomManager.InsPlacement.ItemLayerId.ToString() + "\n" + "Item ID : " + roomManager.InsPlacement.ItemId.ToString();
 
                 if(!EnumeratorCheck)
                     StartCoroutine(StartChangeColor());
@@ -109,11 +112,11 @@ namespace JyModule
 
             if (roomManager.InsPlacement.putOk)
             {
-                od.PutOk.text = "배치 가능한 상태입니다.";
+                ObjData.PutOk.text = "배치 가능한 상태입니다.";
             }
             else
             {
-                od.PutOk.text = "이곳에는 놓을수 없습니다.";
+                ObjData.PutOk.text = "이곳에는 놓을수 없습니다.";
             }
         }
 
@@ -129,11 +132,11 @@ namespace JyModule
 
             checkColor.a = 1;
 
-            od.ColorImage.color = checkColor;
+            ObjData.ColorImage.color = checkColor;
 
-            od.Red.value = checkColor.r;
-            od.Green.value = checkColor.g;
-            od.Blue.value = checkColor.b;
+            ObjData.Red.value = checkColor.r;
+            ObjData.Green.value = checkColor.g;
+            ObjData.Blue.value = checkColor.b;
 
             yield return _yield;
 
@@ -146,12 +149,12 @@ namespace JyModule
                 return;
 
             Color _color;
-            _color.r = od.Red.value;
-            _color.g = od.Green.value;
-            _color.b = od.Blue.value;
+            _color.r = ObjData.Red.value;
+            _color.g = ObjData.Green.value;
+            _color.b = ObjData.Blue.value;
             _color.a = 1;
 
-            od.ColorImage.color = _color;
+            ObjData.ColorImage.color = _color;
             roomManager.InsPlacement.ChangeObjectColor(_color);
             checkColor = _color;
         }

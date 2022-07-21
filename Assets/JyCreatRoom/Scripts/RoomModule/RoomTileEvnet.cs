@@ -36,6 +36,8 @@ namespace JyModule
 
         private void OnMouseUp()
         {
+            if (roomManager == null)
+                return;
             //print("마우스가 오브젝트를 놓았습니다.");
             roomManager.OnMouse_UpEvent_Bottom(this);
         }

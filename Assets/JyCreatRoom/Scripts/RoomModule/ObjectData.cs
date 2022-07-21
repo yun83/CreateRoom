@@ -13,7 +13,6 @@ namespace JyModule
         public Scrollbar Red;
         public Scrollbar Green;
         public Scrollbar Blue;
-        //public Scrollbar Ahlpa;
         public Image ColorImage;
         public Button Cancle;
     }
