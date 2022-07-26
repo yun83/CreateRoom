@@ -49,11 +49,17 @@ namespace JyModule
 
         //카메라 회전 관련
         public Transform LookTargetObj;
-        private float xRotateMove, yRotateMove;
         public float rotateSpeed = 100;
         public float scrollSpeed = 1000;
+        public float ZoomMin = -5;
+        public float ZoomMax = -80;
         //현재 선택된 오브젝트의 데이터를 확인하기위해
         public PlacementManger InsPlacement = null;
+        public VirtualJoystick vStick;
+
+        private Vector2 AxisRtt;
+        public float ZoomDis = -20;
+        private Vector3 ZoomVecter = Vector3.zero;
 
         [Serializable]
         public class BaseTileClass
@@ -69,6 +75,17 @@ namespace JyModule
 #else
             SavePath = Path.Combine(Application.persistentDataPath , "database.json");
 #endif
+            if (MainCamera == null)
+                MainCamera = Camera.main.transform;
+            if (LookTargetObj == null)
+            {
+                LookTargetObj = new GameObject("Axis").transform;
+            }
+            MainCamera.parent = LookTargetObj;
+            MainCamera.localRotation = Quaternion.identity;
+
+            vStick = FindObjectOfType<VirtualJoystick>();
+
             saveData.Bottom_Item.Clear();
             saveData.LeftObverse.Clear();
             saveData.RightObverse.Clear();
@@ -83,9 +100,6 @@ namespace JyModule
 
         void InitPage()
         {
-            if (MainCamera == null)
-                MainCamera = Camera.main.transform;
-
             CreateItemList.Clear();
         }
 
@@ -163,24 +177,55 @@ namespace JyModule
 
         void CameraMouseMove()
         {
+            if (vStick == null)
+                return;
+
             if (Input.GetMouseButton(1))
             {
-                xRotateMove = Input.GetAxis("Mouse X") * Time.deltaTime * rotateSpeed;
-                yRotateMove = Input.GetAxis("Mouse Y") * Time.deltaTime * rotateSpeed;
-
-                MainCamera.RotateAround(LookTargetObj.position, Vector3.right, -yRotateMove);
-                MainCamera.RotateAround(LookTargetObj.position, Vector3.up, xRotateMove);
-
-                MainCamera.LookAt(LookTargetObj);
+                AxisRtt.y += Input.GetAxis("Mouse X") * rotateSpeed; // 마우스의 좌우 이동량을 xmove 에 누적합니다.
+                AxisRtt.x -= Input.GetAxis("Mouse Y") * rotateSpeed; // 마우스의 상하 이동량을 ymove 에 누적합니다.
             }
             else
             {
-                float scroollWheel = Input.GetAxis("Mouse ScrollWheel");
-
-                Vector3 cameraDirection = MainCamera.localRotation * Vector3.forward;
-
-                MainCamera.position += cameraDirection * Time.deltaTime * scroollWheel * scrollSpeed;
+                //화면 줌
+                ZoomDis += Input.GetAxis("Mouse ScrollWheel") * scrollSpeed;
             }
+
+            if (vStick.MoveFlag == false && Input.touchCount >= 2)
+            {
+                Touch touchZero = Input.GetTouch(0); //첫번째 손가락 터치를 저장
+                Touch touchOne = Input.GetTouch(1); //두번째 손가락 터치를 저장
+
+                //터치에 대한 이전 위치값을 각각 저장함
+                //처음 터치한 위치(touchZero.position)에서 이전 프레임에서의 터치 위치와 이번 프로임에서 터치 위치의 차이를 뺌
+                Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition; //deltaPosition는 이동방향 추적할 때 사용
+                Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
+
+                // 각 프레임에서 터치 사이의 벡터 거리 구함
+                float prevTouchDeltaMag = (touchZeroPrevPos - touchOnePrevPos).magnitude; //magnitude는 두 점간의 거리 비교(벡터)
+                float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
+
+                // 거리 차이 구함(거리가 이전보다 크면(마이너스가 나오면)손가락을 벌린 상태_줌인 상태)
+                if (prevTouchDeltaMag - touchDeltaMag > 0)
+                    ZoomDis = scrollSpeed;
+                else
+                    ZoomDis = -scrollSpeed;
+            }
+
+            if (vStick.MoveFlag)
+            {
+                AxisRtt.y -= vStick.JoyVec.x * (rotateSpeed * 0.1f); // 마우스의 좌우 이동량을 xmove 에 누적합니다.
+                AxisRtt.x += vStick.JoyVec.y * (rotateSpeed * 0.1f); // 마우스의 상하 이동량을 ymove 에 누적합니다.
+            }
+
+            ZoomDis = Mathf.Clamp(ZoomDis, ZoomMax, ZoomMin); ;
+            ZoomVecter.z = ZoomDis;
+            MainCamera.localPosition = ZoomVecter;
+
+            //카메라의 회전
+            Quaternion v3Rotation = new Quaternion();
+            v3Rotation.eulerAngles = new Vector3(AxisRtt.x, AxisRtt.y, 0.0f);
+            LookTargetObj.rotation = v3Rotation;
         }
 
         void ArrangementMode(int OnMode)
@@ -362,11 +407,8 @@ namespace JyModule
             CenterPos.z = RoomSize.z / 2;
 
             LookTargetObj.position = new Vector3(CenterPos.x, 0, CenterPos.z);
-            //카메라 바라보는 각도 조절
-            MainCamera.position = CenterPos;
-            //v3Rotation.eulerAngles = new Vector3(90, 0, 0);
-            //MainCamera.rotation = v3Rotation;
-            MainCamera.LookAt(LookTargetObj);
+            AxisRtt.x = 45;
+            AxisRtt.y = 0;
         }
 
         void Map_ObverseLWall()
@@ -412,10 +454,8 @@ namespace JyModule
                 CenterPos.z = -RoomSize.x;
 
             LookTargetObj.position = new Vector3(CenterPos.x, CenterPos.y, 0);
-            MainCamera.position = CenterPos;
-            //v3Rotation.eulerAngles = new Vector3(0, 0, 0);
-            //MainCamera.rotation = v3Rotation;
-            MainCamera.LookAt(LookTargetObj);
+            AxisRtt.x = 20;
+            AxisRtt.y = 0;
         }
 
         void OnChangdeColor()
@@ -673,15 +713,6 @@ namespace JyModule
                 Destroy(CreateItemList[i].gameObject);
                 CreateItemList.RemoveAt(i);
             }
-
-            //if (File.Exists(SavePath))
-            //{
-            //    File.Delete(SavePath);
-            //}
-            //else
-            //{
-            //    Debug.Log("이미 삭제된 파일입니다.");
-            //}
         }
 
         public void OnClick_OneObjectDelete()
@@ -784,8 +815,6 @@ namespace JyModule
                         {
                             for (int j = 0; j < InsPlacement.ObjSize.y; j++)
                             {
-                                //Debug.Log("i[" + i + "] j[" + j + "] ==>" + (posIndex.x + i) + ":" +(posIndex.z + j));
-
                                 int nowMapLayer = MapCheckList[posIndex.x + i][posIndex.y + j];
                                 //if (nowMapLayer != 0 &&
                                 if (oldLayer != nowMapLayer)
@@ -810,8 +839,6 @@ namespace JyModule
                         {
                             for (int j = 0; j < InsPlacement.ObjSize.y; j++)
                             {
-                                //Debug.Log("i[" + i + "] j[" + j + "] ==>" + (posIndex.x + i) + ":" +(posIndex.z + j));
-
                                 int nowMapLayer = MapCheckList[posIndex.x + i][posIndex.y + j];
                                 //if (nowMapLayer != 0 &&
                                 if (oldLayer != nowMapLayer)
