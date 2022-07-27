@@ -25,6 +25,11 @@ namespace JyModule
             {
                 ObjectData_Setting();
             }
+
+            if (ObjData == null)
+            {
+                ObjData = ObjectData.GetComponent<ObjectData>();
+            }
             showUsePutText();
         }
 
@@ -32,7 +37,7 @@ namespace JyModule
         {
             int ObjListSize = ItemObject.Length;
             roomManager.OnClick_CreatePla(ItemObject[index]);
-        }
+        }                                                                                                                                                                                                                                                                     
 
         public void OnChangede_RoomType()
         {
