@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace JyModule
 {
@@ -505,6 +506,8 @@ namespace JyModule
                 return;
             if (InsPlacement == null)
                 return;
+            if (vStick.MoveFlag)
+                return;
 
             InsPlacement.putOk = InsPutCheck(mData.MyPos, InsPlacement.ItemLayerId);
             Vector3 _Pos = mData.MyPos;
@@ -527,7 +530,9 @@ namespace JyModule
                 return;
             if (InsPlacement == null)
                 return;
-
+            if (vStick.MoveFlag)
+                return;
+            
             GameObject temp = null;
             Color subColor = Color.white;
 
@@ -576,6 +581,12 @@ namespace JyModule
                 return;
             if (InsPlacement != null)
                 return;
+            if (vStick.MoveFlag)
+                return;
+            if (!IsPointerOverUIObject(Input.mousePosition))
+            {
+                return;
+            }
 
             int idx = -1;
             PlacementManger tempPM = null;
@@ -853,6 +864,21 @@ namespace JyModule
                     break;
             }
             return true;
+        }
+        public bool IsPointerOverUIObject(Vector2 touchPos)
+        {
+            PointerEventData eventDataCurrentPosition
+                = new PointerEventData(EventSystem.current);
+
+            eventDataCurrentPosition.position = touchPos;
+
+            List<RaycastResult> results = new List<RaycastResult>();
+
+
+            EventSystem.current
+            .RaycastAll(eventDataCurrentPosition, results);
+
+            return results.Count > 0;
         }
 
         void PlacementPosSetting()

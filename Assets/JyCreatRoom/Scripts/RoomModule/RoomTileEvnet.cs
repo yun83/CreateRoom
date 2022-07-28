@@ -23,7 +23,7 @@ namespace JyModule
         private void OnMouseEnter()
         {
             CheckMouseUp = true;
-            //Debug.Log("마우스가 오브젝트에 진입.");
+            //Debug.Log("On Mouse Enter.");
             if (roomManager == null)
                 return;
             roomManager.OnMouse_EnterEvent_Bottom(this);
@@ -32,7 +32,7 @@ namespace JyModule
         private void OnMouseExit()
         {
             CheckMouseUp = false;
-            //Debug.Log("마우스가 오브젝트를 벗어남.");
+            //Debug.Log("On Mouse xit.");
         }
 
         private void OnMouseUp()

@@ -98,7 +98,7 @@ namespace JyModule
                 AxisRtt.y -= vStick.JoyVec.x * (rotateSpeed*0.1f); // 마우스의 좌우 이동량을 xmove 에 누적합니다.
                 AxisRtt.x += vStick.JoyVec.y * (rotateSpeed*0.1f); // 마우스의 상하 이동량을 ymove 에 누적합니다.
                 //Debug.Log(moveH + ":::" + moveV);
-            }
+             }
 
             ZoomDis = Mathf.Clamp(ZoomDis, ZoomMax, ZoomMin); ;
             ZoomVecter.z = ZoomDis;
