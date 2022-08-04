@@ -15,7 +15,6 @@ namespace JyModule
         private bool LoadingCheck = true;
         private string SavePath;
         private JySaveData saveData = new JySaveData();
-        private bool ErrCheck = false;
 
         public VirtualJoystick vStick;
 
@@ -128,6 +127,7 @@ namespace JyModule
                 MainCamera.parent = Axis;
                 MainCamera.localPosition = new Vector3(0, 0, -10);
             }
+
             yield return _yield;
 
             saveData.Bottom_Item.Clear();
@@ -137,6 +137,7 @@ namespace JyModule
             saveData.RightBack.Clear();
 
             yield return _yield;
+
             if (File.Exists(SavePath))
             {
                 string loadJson = File.ReadAllText(SavePath);
@@ -147,7 +148,6 @@ namespace JyModule
             else
             {
                 Debug.Log("Non File :: " + SavePath);
-                ErrCheck = true;
             }
 
             yield return _yield;

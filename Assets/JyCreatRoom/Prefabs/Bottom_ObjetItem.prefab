@@ -110,7 +110,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemLayerId: 2
   ItemId: 1
-  ObjSize: {x: 2, y: 1, z: 3}
+  ObjSize: {x: 1, y: 1, z: 1}
   AutoPosition: 1
   PosCorrect: {x: 0, y: 0, z: 0}
   roomManager: {fileID: 0}

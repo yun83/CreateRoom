@@ -583,10 +583,6 @@ namespace JyModule
                 return;
             if (vStick.MoveFlag)
                 return;
-            if (!IsPointerOverUIObject(Input.mousePosition))
-            {
-                return;
-            }
 
             int idx = -1;
             PlacementManger tempPM = null;

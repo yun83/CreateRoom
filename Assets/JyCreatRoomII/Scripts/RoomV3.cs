@@ -12,6 +12,9 @@ namespace JyModule
         public Transform BottomTrans;
         public Vector3 RoomSize = Vector3.zero;
 
+        [Header("그룹")]
+        public Transform ItemGroup;
+
         [Header("배치 타입")]
         public MapType useType = MapType.Bottom;
         public Dropdown DropdownMapType;
@@ -25,10 +28,8 @@ namespace JyModule
         private Vector3 mousePos, transPos;
 
         [Header("배치 아이템의 아웃라인")]
+        public Material TestMate;
         public Material outline;
-        public Renderer renderers;
-        public List<Material> materialList = new List<Material>();
-        private Color saveColor;
 
         [Header("카메라의 이동 및 회전")]
         public VirtualJoystick vStick;
@@ -63,6 +64,11 @@ namespace JyModule
             outline = new Material(Shader.Find("Draw/OutlineShader"));
             outline.SetColor("_OutlineColor", new Color(1, 1, 1, 1f));
 
+            if (ItemGroup != null)
+                Destroy(ItemGroup.gameObject);
+            ItemGroup = new GameObject("ItemGroup").transform;
+
+            ItemGroup.parent = this.transform;
         }
 
         private void Update()
@@ -77,7 +83,6 @@ namespace JyModule
             if (Input.GetMouseButton(0)) {
                 if (EventSystem.current.IsPointerOverGameObject())
                     return;
-
                 Move_ItemObject();
             }
 
@@ -88,6 +93,13 @@ namespace JyModule
                     if (EventSystem.current.IsPointerOverGameObject())
                         return;
                     UpMouse_ItemDrop();
+                }
+            }
+            else
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    OnClick_ItemObject();
                 }
             }
         }
@@ -169,6 +181,8 @@ namespace JyModule
                 Ray ray = MainCamera.ScreenPointToRay(mousePos);
                 if (Physics.Raycast(ray, out rayHit, 50))
                 {
+                    //Debug.Log(rayHit.point);
+                    Debug.DrawLine(mousePos, rayHit.point);
                     if (rayHit.transform.gameObject != onTrans.gameObject)
                     {
                         transPos = rayHit.point;
@@ -186,56 +200,67 @@ namespace JyModule
             }
         }
 
+        void OnClick_ItemObject()
+        {
+            if (EventSystem.current.IsPointerOverGameObject())
+                return;
+
+            mousePos = Input.mousePosition;
+
+            Ray ray = MainCamera.ScreenPointToRay(mousePos);
+
+            if (Physics.Raycast(ray, out rayHit, 50))
+            {
+                if (rayHit.transform.TryGetComponent(out PiceData _pData)){
+                    _pData.DownMouse();
+                    onTrans = _pData.transform;
+                    insItem = true;
+                }
+            }
+        }
+
         void UpMouse_ItemDrop()
         {
-            /// 아웃라인 쉐이더 제거
-            renderers = onTrans.GetComponentInChildren<Renderer>();
+            //오브젝트를 놓았을 경우
+            if (onTrans.TryGetComponent(out PiceData _pData))
+            {
+                _pData.UpMouse();
+            }
 
-            materialList.Clear();
-            materialList.AddRange(renderers.sharedMaterials);
-            materialList.Remove(outline);
-
-            renderers.materials = materialList.ToArray();
-
-            //saveColor;
             onTrans = null;
             insItem = false;
         }
 
-        public void OnClick_CreateItem(int _idx) 
+        public void OnClick_CreateItem(int _idx)
         {
+            //오브젝트 생성
             Vector3 _objSize = Vector3.zero;
-            GameObject _item = new GameObject("Item");
+            GameObject _item = GameObject.CreatePrimitive(PrimitiveType.Cube);
             PiceData _pData = _item.AddComponent<PiceData>();
-            BoxCollider _box = _item.AddComponent<BoxCollider>();
-            _box.isTrigger = true;
             onTrans = _item.transform;
-            _pData.col = _box;
 
-            /// 원래는 _idx 의 구분으로 실제 아이템을 받아 와야 하나 현재 아이템 관련된 정보가 없으므로 샘프로 대체
+            if (_item.TryGetComponent(out BoxCollider _box))
+            {
+                _box.isTrigger = true;
+            }
+
+            /// 원래는 _idx 의 구분으로 실제 아이템을 받아 와야 하나 현재 아이템 관련된 정보가 없으므로 샘플로 대체
             _pData.DrawObject = Instantiate(Sample);
             if(_pData.DrawObject.TryGetComponent (out Collider _col))
             {
                 _col.enabled = false;
             }
+            /// 현재는 오브젝트의 사이즈를 가지고 오는데 추후 샘플의 스크립트에서 사이즈를 가져오자
             _objSize = _pData.DrawObject.transform.localScale;
             _pData.DrawObject.transform.parent = onTrans;
 
-            _pData.Instantiate_Material();
+            _pData.Instantiate_Material(TestMate);
 
             _box.size = _objSize;
-            sumPosition = (_objSize.y * 0.5f) + 0.01f;
+            sumPosition = (_objSize.y * 0.5f);
 
-            /// 아웃라인 표기 쉐이더 관련
-            renderers = _pData.DrawObject.GetComponent<Renderer>();
-            materialList.Clear();
-            materialList.AddRange(renderers.sharedMaterials);
-            materialList.Add(outline);
-            renderers.materials = materialList.ToArray();
-
-            saveColor = _pData.mate.color;
-            _pData.mate.color = new Color(1, 1, 1, 0.5f);
-
+            _pData.ChangeColor(new Color(1, 1, 1, 0.2f));
+            _pData.transform.parent = ItemGroup;
             insItem = true;
         }
         

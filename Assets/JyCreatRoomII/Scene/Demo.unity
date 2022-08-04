@@ -3679,9 +3679,8 @@ MonoBehaviour:
   DropdownMapType: {fileID: 1128557367}
   Sample: {fileID: 3699862000873907108, guid: a93d849a8ac32ef43a95b60a16090233, type: 3}
   onTrans: {fileID: 0}
+  TestMate: {fileID: 2100000, guid: 83a4b090b1e54b6499f0207d124e9da1, type: 2}
   outline: {fileID: 0}
-  renderers: {fileID: 0}
-  materialList: []
   vStick: {fileID: 0}
   Axis: {fileID: 0}
   RotationDisMin: -30
