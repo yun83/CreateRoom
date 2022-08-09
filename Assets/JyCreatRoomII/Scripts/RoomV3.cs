@@ -30,6 +30,7 @@ namespace JyModule
         [Header("배치 아이템의 아웃라인")]
         public Material TestMate;
         public Material outline;
+        private float ObjectSize_H;
 
         [Header("카메라의 이동 및 회전")]
         public VirtualJoystick vStick;
@@ -172,6 +173,38 @@ namespace JyModule
             }
         }
 
+        void UpMouse_ItemDrop()
+        {
+            //오브젝트를 놓았을 경우
+            if (onTrans.TryGetComponent(out PiceData _pData))
+            {
+                _pData.UpMouse();
+            }
+
+            onTrans = null;
+            insItem = false;
+        }
+
+        #region Click Event
+        void OnClick_ItemObject()
+        {
+            if (EventSystem.current.IsPointerOverGameObject())
+                return;
+
+            mousePos = Input.mousePosition;
+
+            Ray ray = MainCamera.ScreenPointToRay(mousePos);
+            if (Physics.Raycast(ray, out rayHit, 50))
+            {
+                if (rayHit.transform.TryGetComponent(out PiceData _pData))
+                {
+                    _pData.DownMouse();
+                    onTrans = _pData.transform;
+                    insItem = true;
+                }
+            }
+        }
+
         void Move_ItemObject()
         {
             mousePos = Input.mousePosition;
@@ -185,50 +218,29 @@ namespace JyModule
                     Debug.DrawLine(mousePos, rayHit.point);
                     if (rayHit.transform.gameObject != onTrans.gameObject)
                     {
-                        transPos = rayHit.point;
-                        transPos.y += sumPosition;
-
-                        Vector3 changePos = Vector3Int.zero;
-
-                        changePos.x = (int)transPos.x;
-                        changePos.y = transPos.y;
-                        changePos.z = (int)transPos.z;
-
-                        onTrans.position = changePos;
+                        ObjectMoveEvent(rayHit.point);
                     }
                 }
             }
         }
 
-        void OnClick_ItemObject()
+        void ObjectMoveEvent(Vector3 _hitPoint )
         {
-            if (EventSystem.current.IsPointerOverGameObject())
-                return;
-
-            mousePos = Input.mousePosition;
-
-            Ray ray = MainCamera.ScreenPointToRay(mousePos);
-
-            if (Physics.Raycast(ray, out rayHit, 50))
+            transPos = _hitPoint;
+            if (ObjectSize_H <= transPos.y)
             {
-                if (rayHit.transform.TryGetComponent(out PiceData _pData)){
-                    _pData.DownMouse();
-                    onTrans = _pData.transform;
-                    insItem = true;
-                }
+                transPos.y = sumPosition + ObjectSize_H;
             }
-        }
+            else
+                transPos.y = sumPosition;
 
-        void UpMouse_ItemDrop()
-        {
-            //오브젝트를 놓았을 경우
-            if (onTrans.TryGetComponent(out PiceData _pData))
-            {
-                _pData.UpMouse();
-            }
+            Vector3 changePos = Vector3Int.zero;
 
-            onTrans = null;
-            insItem = false;
+            changePos.x = (int)transPos.x;
+            changePos.y = transPos.y;
+            changePos.z = (int)transPos.z;
+
+            onTrans.position = changePos;
         }
 
         public void OnClick_CreateItem(int _idx)
@@ -250,8 +262,10 @@ namespace JyModule
             {
                 _col.enabled = false;
             }
+
             /// 현재는 오브젝트의 사이즈를 가지고 오는데 추후 샘플의 스크립트에서 사이즈를 가져오자
             _objSize = _pData.DrawObject.transform.localScale;
+            ObjectSize_H = _objSize.y;
             _pData.DrawObject.transform.parent = onTrans;
 
             _pData.Instantiate_Material(TestMate);
@@ -264,6 +278,18 @@ namespace JyModule
             insItem = true;
         }
         
+        public void OnClick_AllDelet()
+        {
+            Destroy(ItemGroup.gameObject);
+            Invoke("NewItemGroup", 0.05f);
+        }
+
+        void NewItemGroup()
+        {
+            ItemGroup = new GameObject("ItemGroup").transform;
+            ItemGroup.parent = this.transform;
+        }
+
         public void OnChangeMapType() {
             int _idx = DropdownMapType.value;
             switch (_idx)
@@ -275,5 +301,6 @@ namespace JyModule
                 case 4: useType = MapType.Back_Right_Wall; break;
             }
         }
+        #endregion
     }
 }
